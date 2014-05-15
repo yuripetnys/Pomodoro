@@ -88,7 +88,7 @@ function PomodoroManager() {
 	this.IntervalID = null;
 	this.State = ko.observable(PomodoroManagerState.IDLE);
 	this.Entries = ko.observableArray();
-	this.CurrentTaskName = ko.observable("Task");
+	this.CurrentTaskName = ko.observable("New Task");
 	this.Timer = ko.observable(0);
 	this.FormattedTimer = null;
 	this.WorkTime = ko.observable(25);
@@ -104,18 +104,24 @@ function PomodoroManager() {
 
 
 PomodoroManager.prototype.startTimer = function() {
-	this.promptForNewTask();
-	this.State(PomodoroManagerState.WORKING);
-	this.resetTimer();
-	this.startEntry();
-	requestNotificationPermission();
+	var promptResult = this.promptForNewTask();
 	
-	this.IntervalID = setInterval(this.loop(this), 1000);
+	if (promptResult) {
+		this.State(PomodoroManagerState.WORKING);
+		this.resetTimer();
+		this.startEntry();
+		requestNotificationPermission();
+		
+		this.IntervalID = setInterval(this.loop(this), 1000);
+	}
 }
 PomodoroManager.prototype.changeTask = function() {
-	this.promptForNewTask();
-	this.endEntry();
-	this.startEntry();
+	var promptResult = this.promptForNewTask();
+	
+	if (promptResult) {
+		this.endEntry();
+		this.startEntry();
+	}
 }
 PomodoroManager.prototype.stopTimer = function() {	
 	this.endEntry();
@@ -180,8 +186,14 @@ PomodoroManager.prototype.clearAllEntries = function() {
 	this.Entries.removeAll();
 }
 PomodoroManager.prototype.promptForNewTask = function() {
-	var taskname = window.prompt("What are you going to do now?", "New task");
-	this.CurrentTaskName(!!taskname ? taskname : "New task");
+	var taskname = window.prompt("What are you going to do now?", this.CurrentTaskName());
+	
+	if (taskname == null) {
+		return false;
+	} else {
+		this.CurrentTaskName(!!taskname ? taskname : "New task");
+		return true;
+	}	
 }
 PomodoroManager.prototype.startEntry = function() {
 	var newEntry = new PomodoroEntry();
@@ -221,6 +233,7 @@ PomodoroManager.prototype.configureLocalStorage = function () {
 	if (typeof(Storage)!=="undefined") {
 		this.updateVersion();
 		
+		if (typeof(localStorage.CurrentTaskName)!=="undefined") this.CurrentTaskName(localStorage.CurrentTaskName);
 		if (typeof(localStorage.WorkTime)!=="undefined") this.WorkTime(localStorage.WorkTime * 1);
 		if (typeof(localStorage.ShortBreakTime)!=="undefined") this.ShortBreakTime(localStorage.ShortBreakTime * 1);
 		if (typeof(localStorage.MaxShortBreaks)!=="undefined") this.MaxShortBreaks(localStorage.MaxShortBreaks * 1);
@@ -231,6 +244,7 @@ PomodoroManager.prototype.configureLocalStorage = function () {
 			this.Entries(deserializedEntries);
 		}
 		
+		this.CurrentTaskName.subscribe(function(newValue) { localStorage.CurrentTaskName = newValue; });
 		this.WorkTime.subscribe(function(newValue) { localStorage.WorkTime = newValue; });
 		this.ShortBreakTime.subscribe(function(newValue) { localStorage.ShortBreakTime = newValue; });
 		this.MaxShortBreaks.subscribe(function(newValue) { localStorage.MaxShortBreaks = newValue; });
