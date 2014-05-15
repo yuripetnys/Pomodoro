@@ -1,0 +1,17 @@
+{
+  "name": "Pomodoro",
+  "description": "Simple time-management application based on the Pomodoro technique, with a few cool features and a loud, noisy alarm",
+  "launch_path": "/index.html",
+  "icons": {
+    "128": "/images/icon-128.png"
+  },
+  "developer": {
+    "name": "Yuri 'Arara' Oliveira Petnys",
+    "url": "http://polei.ro"
+  },
+  "permissions": {
+    "desktop-notification": {
+      "description": "Needed for creating system notifications."
+    }
+  }
+}
