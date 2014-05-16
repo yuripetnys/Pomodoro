@@ -116,9 +116,13 @@ PomodoroManager.prototype.startTimer = function() {
 	}
 }
 PomodoroManager.prototype.changeTask = function() {
-	var promptResult = this.promptForNewTask();
+	var oldTask = this.CurrentTaskName();
 	
-	if (promptResult) {
+	this.promptForNewTask();
+	
+	var newTask = this.CurrentTaskName();
+	
+	if (newTask != oldTask) {
 		this.endEntry();
 		this.startEntry();
 	}
