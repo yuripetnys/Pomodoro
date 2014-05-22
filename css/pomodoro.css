@@ -1,6 +1,3 @@
-.pomodoro-slider {
-	border: 1px lightgray solid;
-}
 
 @font-face {
 	font-family: 'PT Mono';
@@ -9,27 +6,29 @@
 	src: local('PT Mono'), local('PTMono-Regular'), url("../fonts/PTMono.woff") format('woff');
 }
 
+.pomodoro-job {
+	text-align: left;
+}
+
+.pomodoro-slider {
+	border: 1px lightgray solid;
+}
+
+.pomodoro-job span, .pomodoro-timer span {
+	font-family: 'PT Mono'; 
+}
+
 @media (max-width: 768px) {
 	.container {
 		font-size: 11px;
 	}
 
-	.pomodoro-job { 
-		text-align: center;
+	.pomodoro-timer { 
+		text-align: right;
 	}
 	
-	.pomodoro-job span {
-		font-family: 'PT Mono'; 
-		font-size: 26px;
-	}
-	
-	.pomodoro-timer  {
-		text-align: center;
-	}
-	
-	.pomodoro-timer span {
-		font-family: 'PT Mono'; 
-		font-size: 26px;
+	.pomodoro-job span, .pomodoro-timer span {
+		font-size: 23px;
 	}
 	
 	.pomodoro-control-button-div {
@@ -70,12 +69,7 @@
 }
 
 @media (min-width: 768px) {
-	.pomodoro-job {
-		text-align: left;
-	}
-	
-	.pomodoro-job span {
-		font-family: 'PT Mono'; 
+	.pomodoro-job span, .pomodoro-timer span {
 		font-size: 41px;
 	}
 	
@@ -83,13 +77,8 @@
 		text-align: center;
 	}
 	
-	.pomodoro-timer span {
-		font-family: 'PT Mono'; 
-		font-size: 41px;
-	}
-	
 	.pomodoro-control-button-div {
-		text-align: right;
 		padding-top: 8px;
+		text-align: right;
 	}
 }

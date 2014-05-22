@@ -46,17 +46,17 @@
 		
 		<div class="container">
 			<div class="row">
-				<div class="col-xs-6 col-sm-4 col-md-4 pomodoro-job">
+				<div class="col-xs-7 col-sm-4 col-md-4 pomodoro-job">
 					<span data-bind="text: PomodoroManagerState.getStateName(State())">Idle</span>
 				</div>
-				<div class="col-xs-6 col-sm-4 col-md-4 pomodoro-timer">
+				<div class="col-xs-5 col-sm-4 col-md-4 pomodoro-timer">
 					<span data-bind="text: FormattedTimer">00:00</span>
 				</div>
 				<div class="col-xs-12 col-sm-4 col-md-4 pomodoro-control-button-div">
-					<button type="button" class="btn btn-success btn-lg pomodoro-control-button" data-bind="click: startTimer, style: { display: State() == 0 ? &#39;inline-block&#39; : &#39;none&#39; }" style="display: none;">
+					<button type="button" class="btn btn-success btn-lg pomodoro-control-button" data-bind="click: startTimer, style: { display: State() == 0 ? 'inline-block' : 'none' }">
 						<span class="glyphicon glyphicon-play"></span> Start
 					</button>
-					<div class="btn-group pomodoro-control-button-group" data-bind="style: { display: State() == 0 ? &#39;none&#39; : &#39;inline-block&#39; }">
+					<div class="btn-group pomodoro-control-button-group" data-bind="style: { display: State() == 0 ? 'none' : 'inline-block' }" style="display: none;">
 						<button type="button" class="btn btn-primary btn-lg pomodoro-control-button-group-button" data-bind="click: changeTask">
 							<span class="glyphicon glyphicon-edit"></span> Task
 						</button>
@@ -110,7 +110,7 @@
 								<th>Start</th>
 								<th>End</th>
 								<th>Duration</th>
-								<th style="text-align: right; width: 85px">
+								<th style="text-align: right; width: 0px">
 									<button type="button" class="btn btn-danger btn-sm" data-bind="click: clearAllEntries">
 										<span class="glyphicon glyphicon-trash"></span> <span class="pomodoro-delete-all-label">Clear all</span>
 									</button>
