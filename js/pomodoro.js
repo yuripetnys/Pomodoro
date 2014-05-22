@@ -21,7 +21,7 @@ function notifyUser(message) {
 		
 		if (Notification.permission !== "denied")
 		{
-			var notification = new Notification('Pomodoro do Arara', { body: message, icon: "images/icon-128.png" });
+			var notification = new Notification('Pomodoro do Arara', { body: message, icon: window.location + "images/icon-128.png" });
 			window.navigator.vibrate(500);
 		}
 	}
