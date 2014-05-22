@@ -1,3 +1,7 @@
+.pomodoro-slider {
+	border: 1px lightgray solid;
+}
+
 @font-face {
 	font-family: 'PT Mono';
 	font-style: normal;
@@ -44,7 +48,7 @@
 	
 	.pomodoro-input-suffix {
 		font-size: 11px;
-		width: 56px;
+		width: 60px;
 	}
 	
 	.pomodoro-input-group {

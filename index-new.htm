@@ -53,7 +53,7 @@
 					<span data-bind="text: FormattedTimer">00:00</span>
 				</div>
 				<div class="col-xs-12 col-sm-4 col-md-4 pomodoro-control-button-div">
-					<button type="button" class="btn btn-success btn-lg pomodoro-control-button" data-bind="click: startTimer, style: { display: State() == 0 ? &#39;inline-block&#39; : &#39;none&#39; }">
+					<button type="button" class="btn btn-success btn-lg pomodoro-control-button" data-bind="click: startTimer, style: { display: State() == 0 ? &#39;inline-block&#39; : &#39;none&#39; }" style="display: none;">
 						<span class="glyphicon glyphicon-play"></span> Start
 					</button>
 					<div class="btn-group pomodoro-control-button-group" data-bind="style: { display: State() == 0 ? &#39;none&#39; : &#39;inline-block&#39; }">
@@ -74,28 +74,28 @@
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
 					<div class="input-group pomodoro-input-group">
 						<span class="input-group-addon pomodoro-input-prefix">Pomodoro</span>
-						<input class="form-control" type="range" min="15" max="35" step="5" data-bind="value: WorkTime">
+						<input class="form-control pomodoro-slider" type="range" min="15" max="35" step="5" data-bind="value: WorkTime, valueUpdate: 'input'">
 						<span class="input-group-addon pomodoro-input-suffix" data-bind="text: WorkTime() + &#39; min&#39;">25 min</span>
 					</div>
 				</div>
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
 					<div class="input-group pomodoro-input-group">
 						<span class="input-group-addon pomodoro-input-prefix">Short break</span>
-						<input class="form-control" type="range" min="1" max="9" step="1" data-bind="value: ShortBreakTime">
+						<input class="form-control pomodoro-slider" type="range" min="1" max="9" step="1" data-bind="value: ShortBreakTime, valueUpdate: 'input'">
 						<span class="input-group-addon pomodoro-input-suffix" data-bind="text: ShortBreakTime() + &#39; min&#39;">5 min</span>
 					</div>
 				</div>
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
 					<div class="input-group pomodoro-input-group">
 						<span class="input-group-addon pomodoro-input-prefix">Long break</span>
-						<input class="form-control" type="range" min="10" max="20" step="1" data-bind="value: LongBreakTime">
+						<input class="form-control pomodoro-slider" type="range" min="10" max="20" step="1" data-bind="value: LongBreakTime, valueUpdate: 'input'">
 						<span class="input-group-addon pomodoro-input-suffix" data-bind="text: LongBreakTime() + &#39; min&#39;">15 min</span>
 					</div>
 				</div>
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
 					<div class="input-group pomodoro-input-group">
 						<span class="input-group-addon pomodoro-input-prefix"># Short breaks</span>
-						<input class="form-control" type="range" min="1" max="5" step="1" data-bind="value: MaxShortBreaks">
+						<input class="form-control pomodoro-slider" type="range" min="1" max="5" step="1" data-bind="value: MaxShortBreaks, valueUpdate: 'input'">
 						<span class="input-group-addon pomodoro-input-suffix" data-bind="text: MaxShortBreaks">3</span>
 					</div>
 				</div>
