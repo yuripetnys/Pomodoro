@@ -10,18 +10,13 @@
 
 		<link rel="shortcut icon" href="./favicon.png" type="image/x-icon">
 		<link rel="icon" href="./favicon.png" type="image/x-icon">
-		
-		<style>
-			@font-face {
-				font-family: 'PT Mono';
-				font-style: normal;
-				font-weight: 400;
-				src: local('PT Mono'), local('PTMono-Regular'), url("fonts/PTMono.woff") format('woff');
-			}
-		</style>
-		
+				
 		<link rel="stylesheet" href="css/bootstrap.min.css">
 		<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="css/pomodoro.css">
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
 		<title>Pomodoro do Arara</title>
 	</head>
 
@@ -42,66 +37,66 @@
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav navbar-right">
 						<li><a href="http://polei.ro/pomodoro/changelog.htm">Changelog</a></li>
-						<li><a href="javascript:;" onclick="document.getElementById(&#39;paypalForm&#39;).submit();">Donate via PayPal!</a></li>
+						<li><a href="javascript:;" onclick="document.getElementById('paypalForm').submit();">Donate via PayPal!</a></li>
 						<li><a href="http://polei.ro/">Return to Poleiro</a></li>
 					</ul>
 				</div>
 			</div>
 		</nav>
-	
+		
 		<div class="container">
 			<div class="row">
-				<div class="col-xs-4 col-sm-4">
-					<h1 data-bind="text: PomodoroManagerState.getStateName(State())" style="font-family: &#39;PT Mono&#39;; font-size: 41px;">Idle</h1>
+				<div class="col-xs-7 col-sm-4 col-md-4 pomodoro-job">
+					<span data-bind="text: PomodoroManagerState.getStateName(State())">Idle</span>
 				</div>
-				<div class="col-xs-4 col-sm-4" style="text-align: center">
-					<h1 data-bind="text: FormattedTimer" style="font-family: &#39;PT Mono&#39;; font-size: 41px;">00:00</h1>
+				<div class="col-xs-5 col-sm-4 col-md-4 pomodoro-timer">
+					<span data-bind="text: FormattedTimer">00:00</span>
 				</div>
-				<div class="col-xs-4 col-sm-4" style="text-align: right">
-					<h1>
-						<button type="button" class="btn btn-success btn-lg" data-bind="click: startTimer, style: { display: State() == 0 ? &#39;inline-block&#39; : &#39;none&#39; }" style="display: inline-block;">
-							<span class="glyphicon glyphicon-play"></span> Start
-						</button>
-						<button type="button" class="btn btn-primary btn-lg" data-bind="click: changeTask, style: { display: State() == 0 ? &#39;none&#39; : &#39;inline-block&#39; }" style="display: none;">
+				<div class="col-xs-12 col-sm-4 col-md-4 pomodoro-control-button-div">
+					<button type="button" class="btn btn-success btn-lg pomodoro-control-button" data-bind="click: startTimer, style: { display: State() == 0 ? 'inline-block' : 'none' }">
+						<span class="glyphicon glyphicon-play"></span> Start
+					</button>
+					<div class="btn-group pomodoro-control-button-group" data-bind="style: { display: State() == 0 ? 'none' : 'inline-block' }" style="display: none;">
+						<button type="button" class="btn btn-primary btn-lg pomodoro-control-button-group-button" data-bind="click: changeTask">
 							<span class="glyphicon glyphicon-edit"></span> Task
 						</button>
-						<button type="button" class="btn btn-danger btn-lg" data-bind="click: stopTimer, style: { display: State() == 0 ? &#39;none&#39; : &#39;inline-block&#39; }" style="display: none;">
+						<button type="button" class="btn btn-danger btn-lg pomodoro-control-button-group-button" data-bind="click: stopTimer">
 							<span class="glyphicon glyphicon-stop"></span> Stop
 						</button>
-						<button type="button" class="btn btn-info btn-lg" data-bind="click: pottyPause, style: { display: State() == 0 ? &#39;none&#39; : &#39;inline-block&#39; }" style="display: none;">
+						<button type="button" class="btn btn-info btn-lg pomodoro-control-button-group-button" data-bind="click: pottyPause">
 							<span class="glyphicon glyphicon-tree-conifer"></span> Pause
 						</button>
-					</h1>
+					</div>
 				</div>
 			</div>
 			<div class="row">&nbsp;</div>
 			<div class="row">
-				<div class="col-xs-6 col-sm-6 col-md-6 col-lg-3">
-					<div class="input-group">
-						<span class="input-group-addon">Pomodoro</span>
-						<input class="form-control" type="range" min="15" max="35" step="5" data-bind="value: WorkTime">
-						<span class="input-group-addon" data-bind="text: WorkTime() + &#39; min&#39;">25 min</span>
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
+					<div class="input-group pomodoro-input-group">
+						<span class="input-group-addon pomodoro-input-prefix">Pomodoro</span>
+						<input class="form-control pomodoro-slider" type="range" min="15" max="35" step="5" data-bind="value: WorkTime, valueUpdate: 'input'">
+						<span class="input-group-addon pomodoro-input-suffix" data-bind="text: WorkTime() + ' min'">25 min</span>
 					</div>
 				</div>
-				<div class="col-xs-6 col-sm-6 col-md-6 col-lg-3">
-					<div class="input-group">
-						<span class="input-group-addon">Short break</span>
-						<input class="form-control" type="range" min="1" max="9" step="1" data-bind="value: ShortBreakTime">
-						<span class="input-group-addon" data-bind="text: ShortBreakTime() + &#39; min&#39;">5 min</span>
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
+					<div class="input-group pomodoro-input-group">
+						<span class="input-group-addon pomodoro-input-prefix">Short break</span>
+						<input class="form-control pomodoro-slider" type="range" min="1" max="9" step="1" data-bind="value: ShortBreakTime, valueUpdate: 'input'">
+						<span class="input-group-addon pomodoro-input-suffix" data-bind="text: ShortBreakTime() + ' min'">5 min</span>
 					</div>
 				</div>
-				<div class="col-xs-6 col-sm-6 col-md-6 col-lg-3">
-					<div class="input-group">
-						<span class="input-group-addon">Long break</span>
-						<input class="form-control" type="range" min="10" max="20" step="1" data-bind="value: LongBreakTime">
-						<span class="input-group-addon" data-bind="text: LongBreakTime() + &#39; min&#39;">15 min</span>
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
+					<div class="input-group pomodoro-input-group">
+						<span class="input-group-addon pomodoro-input-prefix">Long break</span>
+						<input class="form-control pomodoro-slider" type="range" min="10" max="20" step="1" data-bind="value: LongBreakTime, valueUpdate: 'input'">
+						<span class="input-group-addon pomodoro-input-suffix" data-bind="text: LongBreakTime() + ' min'">15 min</span>
 					</div>
 				</div>
-				<div class="col-xs-6 col-sm-6 col-md-6 col-lg-3">
-					<div class="input-group">
-						<span class="input-group-addon"># Short breaks</span>
-						<input class="form-control" type="range" min="1" max="5" step="1" data-bind="value: MaxShortBreaks">
-						<span class="input-group-addon" data-bind="text: MaxShortBreaks">3</span>
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
+					<div class="input-group pomodoro-input-group">
+						<span class="input-group-addon pomodoro-input-prefix"># Short breaks</span>
+						<input class="form-control pomodoro-slider" type="range" min="1" max="5" step="1" data-bind="value: MaxShortBreaks, valueUpdate: 'input'">
+						<span class="input-group-addon pomodoro-input-suffix" data-bind="text: MaxShortBreaks">3</span>
 					</div>
 				</div>
 			</div>
@@ -115,9 +110,9 @@
 								<th>Start</th>
 								<th>End</th>
 								<th>Duration</th>
-								<th style="text-align: right; width: 85px">
+								<th style="text-align: right; width: 0px">
 									<button type="button" class="btn btn-danger btn-sm" data-bind="click: clearAllEntries">
-										<span class="glyphicon glyphicon-trash"></span> Clear all
+										<span class="glyphicon glyphicon-trash"></span> <span class="pomodoro-delete-all-label">Clear all</span>
 									</button>
 								</th>
 							</tr>
@@ -129,9 +124,9 @@
 								<td data-bind="text: FormattedStart"></td>
 								<td data-bind="text: FormattedEnd"></td>
 								<td data-bind="text: Difference"></td>
-								<td>
+								<td style="text-align: right;">
 									<button type="button" class="btn btn-danger btn-sm" data-bind="click: $parent.clearEntry">
-										<span class="glyphicon glyphicon-trash"></span> Delete
+										<span class="glyphicon glyphicon-trash"></span> <span class="pomodoro-delete-label">Delete</span>
 									</button>
 								</td>
 							</tr>
@@ -149,9 +144,9 @@
 			</div>
 			<div class="row">&nbsp;</div>
 			<div class="row" style="border-bottom: 1px solid silver;">&nbsp;</div>
-			<div class="row" style="text-align: right; color: gray;">Created by Yuri 'Arara', using Bootstrap, Knockout, MomentJS, Google Fonts and jQuery (of course)</div>
-			<div class="row" style="text-align: right; color: gray;"><a href="https://www.freesound.org/people/bone666138/sounds/198841/">Alarm sound</a> by bone666138, available on Freesound.org</div>
-			<div class="row" style="text-align: right; color: gray;">Contact me at yuri dot oliveira at gmail dot com</div>
+			<div class="row" style="text-align: right; color: gray; padding-left: 10px; padding-right: 10px;">Created by Yuri 'Arara', using Bootstrap, Knockout, MomentJS, Google Fonts and jQuery (of course)</div>
+			<div class="row" style="text-align: right; color: gray; padding-left: 10px; padding-right: 10px;"><a href="https://www.freesound.org/people/bone666138/sounds/198841/">Alarm sound</a> by bone666138, available on Freesound.org</div>
+			<div class="row" style="text-align: right; color: gray; padding-left: 10px; padding-right: 10px;">Contact me at yuri dot oliveira at gmail dot com</div>
 		</div>
 
 	
