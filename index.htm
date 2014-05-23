@@ -27,6 +27,55 @@
 			">
 		</form>
 		
+		<div class="modal fade" id="configModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Settings</h4>
+					</div>
+					<div class="modal-body">
+						<h4>Pomodoro Settings</h4>
+						<div class="input-group pomodoro-input-group">
+							<span class="input-group-addon pomodoro-input-prefix">Pomodoro</span>
+							<input class="form-control pomodoro-slider" type="range" min="15" max="35" step="5" data-bind="value: WorkTime, valueUpdate: 'input'">
+							<span class="input-group-addon pomodoro-input-suffix" data-bind="text: WorkTime() + ' min'">25 min</span>
+						</div><br/>
+						<div class="input-group pomodoro-input-group">
+							<span class="input-group-addon pomodoro-input-prefix">Short break</span>
+							<input class="form-control pomodoro-slider" type="range" min="1" max="9" step="1" data-bind="value: ShortBreakTime, valueUpdate: 'input'">
+							<span class="input-group-addon pomodoro-input-suffix" data-bind="text: ShortBreakTime() + ' min'">5 min</span>
+						</div><br/>
+						<div class="input-group pomodoro-input-group">
+							<span class="input-group-addon pomodoro-input-prefix">Long break</span>
+							<input class="form-control pomodoro-slider" type="range" min="10" max="20" step="1" data-bind="value: LongBreakTime, valueUpdate: 'input'">
+							<span class="input-group-addon pomodoro-input-suffix" data-bind="text: LongBreakTime() + ' min'">15 min</span>
+						</div><br/>
+						<div class="input-group pomodoro-input-group">
+							<span class="input-group-addon pomodoro-input-prefix"># Short breaks</span>
+							<input class="form-control pomodoro-slider" type="range" min="1" max="5" step="1" data-bind="value: MaxShortBreaks, valueUpdate: 'input'">
+							<span class="input-group-addon pomodoro-input-suffix" data-bind="text: MaxShortBreaks">3</span>
+						</div><br/><br/>
+						<h4>Notification Settings</h4>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" data-bind="checked: EnableAudioNotifications"> Enable audio notifications
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" data-bind="checked: EnablePopupNotifications"> Enable popup notifications
+							</label>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary">Save changes</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
 		<nav class="navbar navbar-default" role="navigation">
 			<div class="container">
 				<div class="navbar-header">
@@ -36,6 +85,7 @@
 
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav navbar-right">
+						<li><a href="#" data-toggle="modal" data-target="#configModal">Settings</a></li>
 						<li><a href="http://polei.ro/pomodoro/about.htm">About</a></li>
 						<li><a href="javascript:;" onclick="document.getElementById('paypalForm').submit();">Donate via PayPal!</a></li>
 						<li><a href="http://polei.ro/">Return to Poleiro</a></li>
@@ -66,37 +116,6 @@
 						<button type="button" class="btn btn-info btn-lg pomodoro-control-button-group-button" data-bind="click: pottyPause">
 							<span class="glyphicon glyphicon-tree-conifer"></span> Pause
 						</button>
-					</div>
-				</div>
-			</div>
-			<div class="row">&nbsp;</div>
-			<div class="row">
-				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
-					<div class="input-group pomodoro-input-group">
-						<span class="input-group-addon pomodoro-input-prefix">Pomodoro</span>
-						<input class="form-control pomodoro-slider" type="range" min="15" max="35" step="5" data-bind="value: WorkTime, valueUpdate: 'input'">
-						<span class="input-group-addon pomodoro-input-suffix" data-bind="text: WorkTime() + ' min'">25 min</span>
-					</div>
-				</div>
-				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
-					<div class="input-group pomodoro-input-group">
-						<span class="input-group-addon pomodoro-input-prefix">Short break</span>
-						<input class="form-control pomodoro-slider" type="range" min="1" max="9" step="1" data-bind="value: ShortBreakTime, valueUpdate: 'input'">
-						<span class="input-group-addon pomodoro-input-suffix" data-bind="text: ShortBreakTime() + ' min'">5 min</span>
-					</div>
-				</div>
-				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
-					<div class="input-group pomodoro-input-group">
-						<span class="input-group-addon pomodoro-input-prefix">Long break</span>
-						<input class="form-control pomodoro-slider" type="range" min="10" max="20" step="1" data-bind="value: LongBreakTime, valueUpdate: 'input'">
-						<span class="input-group-addon pomodoro-input-suffix" data-bind="text: LongBreakTime() + ' min'">15 min</span>
-					</div>
-				</div>
-				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
-					<div class="input-group pomodoro-input-group">
-						<span class="input-group-addon pomodoro-input-prefix"># Short breaks</span>
-						<input class="form-control pomodoro-slider" type="range" min="1" max="5" step="1" data-bind="value: MaxShortBreaks, valueUpdate: 'input'">
-						<span class="input-group-addon pomodoro-input-suffix" data-bind="text: MaxShortBreaks">3</span>
 					</div>
 				</div>
 			</div>

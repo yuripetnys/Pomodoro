@@ -18,6 +18,10 @@
 	font-family: 'PT Mono'; 
 }
 
+.pomodoro-input-group {
+	width: 100%;
+}
+
 @media (max-width: 768px) {
 	.container {
 		font-size: 11px;
@@ -50,10 +54,6 @@
 		width: 60px;
 	}
 	
-	.pomodoro-input-group {
-		width: 100%;
-	}
-	
 	.pomodoro-delete-label {
 		display: none;
 	}
@@ -80,5 +80,13 @@
 	.pomodoro-control-button-div {
 		padding-top: 8px;
 		text-align: right;
+	}
+	
+	.pomodoro-input-prefix {
+		width: 120px;
+	}
+	
+	.pomodoro-input-suffix {
+		width: 70px;
 	}
 }

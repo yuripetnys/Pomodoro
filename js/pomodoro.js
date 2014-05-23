@@ -96,6 +96,8 @@ function PomodoroManager() {
 	this.MaxShortBreaks = ko.observable(3);
 	this.LongBreakTime = ko.observable(15);
 	this.StateBeforePause = null;
+	this.EnableAudioNotifications = ko.observable(true);
+	this.EnablePopupNotifications = ko.observable(true);
 	
 	this.FormattedTimer = ko.computed(function() { return this.getFormattedTimer(); }, this);
 	
@@ -110,7 +112,7 @@ PomodoroManager.prototype.startTimer = function() {
 		this.State(PomodoroManagerState.WORKING);
 		this.resetTimer();
 		this.startEntry();
-		requestNotificationPermission();
+		if (this.EnablePopupNotifications()) requestNotificationPermission();
 		
 		this.IntervalID = setInterval(this.loop(this), 1000);
 	}
@@ -155,11 +157,11 @@ PomodoroManager.prototype.loop = function(manager) {
 		if (manager.Timer() == 0)
 		{
 			var oldState = manager.State();
-			AudioManager.play();
+			if (manager.EnableAudioNotifications()) AudioManager.play();
 			manager.endEntry();
 			manager.goToNextState();
 			var newState = manager.State();
-			notifyUser("Your " + PomodoroManagerState.getStateName(oldState) + " Pomodoro is over. Starting a " + PomodoroManagerState.getStateName(newState) + " Pomodoro now!");
+			if (manager.EnablePopupNotifications()) notifyUser("Your " + PomodoroManagerState.getStateName(oldState) + " Pomodoro is over. Starting a " + PomodoroManagerState.getStateName(newState) + " Pomodoro now!");
 			manager.startEntry();
 		}
 	}
@@ -247,6 +249,8 @@ PomodoroManager.prototype.configureLocalStorage = function () {
 			var deserializedEntries = parsedEntries.map(function (element) { return PomodoroEntry.Deserialize(element, this); }, this);
 			this.Entries(deserializedEntries);
 		}
+		if (typeof(localStorage.EnableAudioNotifications)!=="undefined") this.EnableAudioNotifications = !!localStorage.EnableAudioNotifications;
+		if (typeof(localStorage.EnablePopupNotifications)!=="undefined") this.EnablePopupNotifications = !!localStorage.EnablePopupNotifications;
 		
 		this.CurrentTaskName.subscribe(function(newValue) { localStorage.CurrentTaskName = newValue; });
 		this.WorkTime.subscribe(function(newValue) { localStorage.WorkTime = newValue; });
@@ -258,6 +262,8 @@ PomodoroManager.prototype.configureLocalStorage = function () {
 			var stringifiedEntries = JSON.stringify(serializedEntries);
 			localStorage.Entries = stringifiedEntries; 
 		});
+		this.EnableAudioNotifications.subscribe(function(newValue) { localStorage.EnableAudioNotifications = newValue; });
+		this.EnablePopupNotifications.subscribe(function(newValue) { localStorage.EnablePopupNotifications = newValue; });
 	}
 }
 PomodoroManager.prototype.clearEntry = function (entry) {
