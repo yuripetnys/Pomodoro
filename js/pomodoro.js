@@ -6,10 +6,12 @@ AudioManager.AudioFile.src = "aud/alarm.mp3";
 AudioManager.play = function () { if (AudioManager.AudioLoaded) { AudioManager.AudioFile.play(); }}
 
 function requestNotificationPermission() {
-	Notification.requestPermission(function (permission) { 
-		Notification.permission = permission; 
-		console.log(permission);
-	});
+	if ("Notification" in window) {
+		Notification.requestPermission(function (permission) { 
+			Notification.permission = permission; 
+			console.log(permission);
+		});
+	}
 }
 
 function notifyUser(message) {
