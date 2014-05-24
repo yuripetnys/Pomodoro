@@ -41,26 +41,28 @@
 			<div class="row">
 				<div class="col-xs-12">
 					<h1>About</h1>
-					<p>This is a time-management application based on the Pomodoro technique. For more </p>
+					<p>This is a time-management application based on the Pomodoro technique. For more information on the technique, please refer to <a href="http://en.wikipedia.org/wiki/Pomodoro_Technique" target="_blank">this article on the Wikipedia.</a></p>
+					<p>This app features a responsible design, task tracking, time settings customization, support for Web Notifications, and a noisy, irritating alarm played via the HTML5 audio interface.</p>
+					<p>Desktop browsers: It is fully compatible with Chrome and Firefox. IE11 is fully compatible, except for Web Notifications, which it does not implement.</p>
+					<p>Mobile browsers: Right now, there's a bug on Safari iOS that prevents the audio from playing. I don't have an Android or Windows Phone device, but people say it works fine on them. However, it's not a good idea to run this app on mobile devices - when the Browser lose focus, the timer stops ticking down. So, yeah.</p>
+					<p>Except for Firefox OS. Firefox OS works perfectly with this. That thing's crazy.</p>
 				</div>
 			</div>
-			<div class="row">
+			<div class="row" style="border-top: 1px solid black; margin-top: 10px;">
 				<div class="col-xs-12">
 					<h1>Golden Hall of Donations</h1>
-					<h2 style="
-						border-color: goldenrod;
-						border-width: 5px;
-						border-style: outset;
-						background-color: goldenrod;
-						padding: 5px;
-						color: gold;
-					">@aylons, @seaandsailor, @SagaKazama</h2>
+					<h2>@aylons, @seaandsailor, @SagaKazama</h2>
 				</div>
 			</div>
 			<div class="row"></div>
-			<div class="row">
+			<div class="row" style="border-top: 1px solid black; margin-top: 10px;">
 				<div class="col-xs-12">
 					<h1>Changelog</h1>
+					<h2>2014-05-23</h2>
+					<ul>
+						<li>Moved settings to its own Settings Dialog. Now I can include more options without polluting the main screen on small devices.</li>
+						<li>Fixed the timer not counting down at first on Safari iOS and IE11.</li>
+					</ul>		
 					<h2>2014-05-22</h2>
 					<ul>
 						<li>Redesigned the interface for mobile devices. Now navigation on iOS and Android shouldn't be a mess.</li>

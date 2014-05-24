@@ -2,7 +2,7 @@ AudioManager = {}
 AudioManager.AudioLoaded = false;
 AudioManager.AudioFile = new Audio();
 AudioManager.AudioFile.addEventListener('canplaythrough', function () { AudioManager.AudioLoaded = true; }, false);
-AudioManager.AudioFile.src = "aud/alarm.mp3";
+AudioManager.load = function () { AudioManager.AudioFile.src = "aud/alarm.mp3"; }
 AudioManager.play = function () { if (AudioManager.AudioLoaded) { AudioManager.AudioFile.play(); }}
 
 function requestNotificationPermission() {
@@ -111,6 +111,7 @@ PomodoroManager.prototype.startTimer = function() {
 	var promptResult = this.promptForNewTask();
 	
 	if (promptResult) {
+		AudioManager.load();
 		this.State(PomodoroManagerState.WORKING);
 		this.resetTimer();
 		this.startEntry();

@@ -172,7 +172,7 @@
 		PM = new PomodoroManager();
 		ko.applyBindings(PM);
 		
-		Notification.requestPermission();
+		requestNotificationPermission();
 		
 		window.onbeforeunload = function (e) {
 			e = e || window.event;
