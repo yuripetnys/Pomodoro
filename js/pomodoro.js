@@ -1,9 +1,21 @@
+DeviceDetector = {}
+DeviceDetector.IsIOS = function () {
+	return /(iPad|iPhone|iPod)/g.test( navigator.userAgent );
+}
+DeviceDetector.IsIOS2 = function () {
+	return /(iPad|iPhone|iPod)/g.test( navigator.platform );
+}
+
 AudioManager = {}
 AudioManager.AudioLoaded = false;
 AudioManager.AudioFile = new Audio();
 AudioManager.AudioFile.addEventListener('canplaythrough', function () { AudioManager.AudioLoaded = true; }, false);
-AudioManager.load = function () { AudioManager.AudioFile.src = "aud/alarm.mp3"; }
+AudioManager.load = function () { 
+	AudioManager.AudioFile.src = "http://polei.ro/pomodoro/aud/alarm.mp3"; 
+	AudioManager.AudioFile.load();
+}
 AudioManager.play = function () { if (AudioManager.AudioLoaded) { AudioManager.AudioFile.play(); }}
+if (!DeviceDetector.IsIOS()) AudioManager.load();
 
 function requestNotificationPermission() {
 	if ("Notification" in window) {
@@ -111,7 +123,7 @@ PomodoroManager.prototype.startTimer = function() {
 	var promptResult = this.promptForNewTask();
 	
 	if (promptResult) {
-		AudioManager.load();
+		if (DeviceDetector.IsIOS()) AudioManager.load();
 		this.State(PomodoroManagerState.WORKING);
 		this.resetTimer();
 		this.startEntry();
@@ -161,6 +173,7 @@ PomodoroManager.prototype.loop = function(manager) {
 		{
 			var oldState = manager.State();
 			if (manager.EnableAudioNotifications()) AudioManager.play();
+			if ("vibrate" in window.navigator) window.navigator.vibrate(200);
 			manager.endEntry();
 			manager.goToNextState();
 			var newState = manager.State();
