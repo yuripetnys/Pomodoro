@@ -36,7 +36,6 @@ function notifyUser(message) {
 		if (Notification.permission !== "denied")
 		{
 			var notification = new Notification('Pomodoro do Arara', { body: message, icon: window.location + "images/icon-128.png" });
-			window.navigator.vibrate(500);
 		}
 	}
 }
@@ -112,7 +111,7 @@ function PomodoroManager() {
 	this.StateBeforePause = null;
 	this.EnableAudioNotifications = ko.observable(true);
 	this.EnablePopupNotifications = ko.observable(true);
-	
+	this.EnableVibration = ko.observable(true);
 	this.FormattedTimer = ko.computed(function() { return this.getFormattedTimer(); }, this);
 	
 	this.configureLocalStorage();
@@ -173,7 +172,7 @@ PomodoroManager.prototype.loop = function(manager) {
 		{
 			var oldState = manager.State();
 			if (manager.EnableAudioNotifications()) AudioManager.play();
-			if ("vibrate" in window.navigator) window.navigator.vibrate(200);
+			if ("vibrate" in window.navigator && manager.EnableVibration()) window.navigator.vibrate([200,100,200,100,200]);
 			manager.endEntry();
 			manager.goToNextState();
 			var newState = manager.State();
@@ -267,6 +266,7 @@ PomodoroManager.prototype.configureLocalStorage = function () {
 		}
 		if (typeof(localStorage.EnableAudioNotifications)!=="undefined") this.EnableAudioNotifications = !!localStorage.EnableAudioNotifications;
 		if (typeof(localStorage.EnablePopupNotifications)!=="undefined") this.EnablePopupNotifications = !!localStorage.EnablePopupNotifications;
+		if (typeof(localStorage.EnableVibration)!=="undefined") this.EnableVibration = !!localStorage.EnableVibration;
 		
 		this.CurrentTaskName.subscribe(function(newValue) { localStorage.CurrentTaskName = newValue; });
 		this.WorkTime.subscribe(function(newValue) { localStorage.WorkTime = newValue; });
@@ -280,6 +280,7 @@ PomodoroManager.prototype.configureLocalStorage = function () {
 		});
 		this.EnableAudioNotifications.subscribe(function(newValue) { localStorage.EnableAudioNotifications = newValue; });
 		this.EnablePopupNotifications.subscribe(function(newValue) { localStorage.EnablePopupNotifications = newValue; });
+		this.EnableVibration.subscribe(function(newValue) { localStorage.EnableVibration = newValue; });
 	}
 }
 PomodoroManager.prototype.clearEntry = function (entry) {
