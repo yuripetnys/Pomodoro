@@ -7,14 +7,33 @@ DeviceDetector.IsIOS2 = function () {
 }
 
 AudioManager = {}
-AudioManager.AudioLoaded = false;
-AudioManager.AudioFile = new Audio();
-AudioManager.AudioFile.addEventListener('canplaythrough', function () { AudioManager.AudioLoaded = true; }, false);
+AudioManager.Alarm = new Audio();
+AudioManager.Alarm.addEventListener('ended', function () { 
+	if (AudioManager.SilenceEnabled) AudioManager.Silence.play(); 
+}, false);
+AudioManager.Silence = new Audio();
+AudioManager.Silence.loop = true;
+AudioManager.SilenceEnabled = false;
 AudioManager.load = function () { 
-	AudioManager.AudioFile.src = "http://polei.ro/pomodoro/aud/alarm.mp3"; 
-	AudioManager.AudioFile.load();
+	AudioManager.Alarm.src = "aud/alarm.mp3"; 
+	AudioManager.Alarm.load();
+	AudioManager.Silence.src = "aud/silence.mp3";
+	AudioManager.Silence.load();
 }
-AudioManager.play = function () { if (AudioManager.AudioLoaded) { AudioManager.AudioFile.play(); }}
+AudioManager.play = function () { 
+	if (AudioManager.SilenceEnabled) AudioManager.Silence.pause();
+	AudioManager.Alarm.play();
+}
+AudioManager.enableSilenceLoop = function (enables) { 
+	if (enables) {
+		AudioManager.SilenceEnabled = true;
+		AudioManager.Silence.play(); 
+	} else {
+		AudioManager.SilenceEnabled = false;
+		AudioManager.Silence.pause();
+	}
+}
+
 if (!DeviceDetector.IsIOS()) AudioManager.load();
 
 function requestNotificationPermission() {
@@ -113,6 +132,10 @@ function PomodoroManager() {
 	this.EnablePopupNotifications = ko.observable(true);
 	this.EnableVibration = ko.observable(true);
 	this.FormattedTimer = ko.computed(function() { return this.getFormattedTimer(); }, this);
+	
+	this.KeepMobileAlive = ko.observable();
+	this.KeepMobileAlive.subscribe(function(newValue) { AudioManager.enableSilenceLoop(newValue); });
+	this.KeepMobileAlive(true);
 	
 	this.configureLocalStorage();
 }
@@ -254,19 +277,20 @@ PomodoroManager.prototype.configureLocalStorage = function () {
 	if (typeof(Storage)!=="undefined") {
 		this.updateVersion();
 		
-		if (typeof(localStorage.CurrentTaskName)!=="undefined") this.CurrentTaskName(localStorage.CurrentTaskName);
-		if (typeof(localStorage.WorkTime)!=="undefined") this.WorkTime(localStorage.WorkTime * 1);
-		if (typeof(localStorage.ShortBreakTime)!=="undefined") this.ShortBreakTime(localStorage.ShortBreakTime * 1);
-		if (typeof(localStorage.MaxShortBreaks)!=="undefined") this.MaxShortBreaks(localStorage.MaxShortBreaks * 1);
-		if (typeof(localStorage.LongBreakTime)!=="undefined") this.LongBreakTime(localStorage.LongBreakTime * 1);
-		if (typeof(localStorage.Entries)!=="undefined") {
+		if ("CurrentTaskName" in localStorage) this.CurrentTaskName(localStorage.CurrentTaskName);
+		if ("WorkTime" in localStorage) this.WorkTime(localStorage.WorkTime * 1);
+		if ("ShortBreakTime" in localStorage) this.ShortBreakTime(localStorage.ShortBreakTime * 1);
+		if ("MaxShortBreaks" in localStorage) this.MaxShortBreaks(localStorage.MaxShortBreaks * 1);
+		if ("LongBreakTime" in localStorage) this.LongBreakTime(localStorage.LongBreakTime * 1);
+		if ("Entries" in localStorage) {
 			var parsedEntries = JSON.parse(localStorage.Entries);
 			var deserializedEntries = parsedEntries.map(function (element) { return PomodoroEntry.Deserialize(element, this); }, this);
 			this.Entries(deserializedEntries);
 		}
-		if (typeof(localStorage.EnableAudioNotifications)!=="undefined") this.EnableAudioNotifications = !!localStorage.EnableAudioNotifications;
-		if (typeof(localStorage.EnablePopupNotifications)!=="undefined") this.EnablePopupNotifications = !!localStorage.EnablePopupNotifications;
-		if (typeof(localStorage.EnableVibration)!=="undefined") this.EnableVibration = !!localStorage.EnableVibration;
+		if ("EnableAudioNotifications" in localStorage) this.EnableAudioNotifications = !!localStorage.EnableAudioNotifications;
+		if ("EnablePopupNotifications" in localStorage) this.EnablePopupNotifications = !!localStorage.EnablePopupNotifications;
+		if ("EnableVibration" in localStorage) this.EnableVibration = !!localStorage.EnableVibration;
+		if ("KeepMobileAlive" in localStorage) this.KeepMobileAlive = !!localStorage.KeepMobileAlive;
 		
 		this.CurrentTaskName.subscribe(function(newValue) { localStorage.CurrentTaskName = newValue; });
 		this.WorkTime.subscribe(function(newValue) { localStorage.WorkTime = newValue; });
@@ -281,6 +305,7 @@ PomodoroManager.prototype.configureLocalStorage = function () {
 		this.EnableAudioNotifications.subscribe(function(newValue) { localStorage.EnableAudioNotifications = newValue; });
 		this.EnablePopupNotifications.subscribe(function(newValue) { localStorage.EnablePopupNotifications = newValue; });
 		this.EnableVibration.subscribe(function(newValue) { localStorage.EnableVibration = newValue; });
+		this.KeepMobileAlive.subscribe(function(newValue) { localStorage.KeepMobileAlive = newValue; });
 	}
 }
 PomodoroManager.prototype.clearEntry = function (entry) {
