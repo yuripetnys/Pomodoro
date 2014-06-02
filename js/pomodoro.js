@@ -94,6 +94,13 @@ PomodoroEntry.Deserialize = function(jsonObject, manager) {
 	return a;
 }
 
+PomodoroSummaryEntry = function() {
+	this.TaskName = ko.observable(null);
+	this.WorkTime = ko.observable(null);
+	this.BreakTime = ko.observable(null);
+	this.PauseTime = ko.observable(null);
+}
+
 PomodoroManagerState = {}
 PomodoroManagerState.IDLE = 0;
 PomodoroManagerState.WORKING = 1;
@@ -132,6 +139,8 @@ function PomodoroManager() {
 	this.EnablePopupNotifications = ko.observable(true);
 	this.EnableVibration = ko.observable(true);
 	this.FormattedTimer = ko.computed(function() { return this.getFormattedTimer(); }, this);
+	
+	this.SummaryEntries = ko.observableArray();
 	
 	this.KeepMobileAlive = ko.observable();
 	this.KeepMobileAlive.subscribe(function(newValue) { AudioManager.enableSilenceLoop(newValue); });
@@ -310,6 +319,9 @@ PomodoroManager.prototype.configureLocalStorage = function () {
 }
 PomodoroManager.prototype.clearEntry = function (entry) {
 	this.Parent.Entries.remove(entry);
+}
+PomodoroManager.prototype.updateSummary = function () {
+	
 }
 PomodoroManager.prototype.updateVersion = function () {
 	if (typeof(localStorage.Version)=="undefined") {

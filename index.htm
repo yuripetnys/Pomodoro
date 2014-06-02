@@ -80,6 +80,21 @@
 			</div>
 		</div>
 		
+		
+		<div class="modal fade" id="summaryModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Task Summary</h4>
+					</div>
+					<div class="modal-body">
+						<h4>Pomodoro Settings</h4>
+					</div>
+				</div>
+			</div>
+		</div>
+		
 		<nav class="navbar navbar-default" role="navigation">
 			<div class="container">
 				<div class="navbar-header">
@@ -141,7 +156,8 @@
 							</tr>
 						</thead>
 						<!-- ko if: Entries().length > 0 -->
-						<tbody data-bind="foreach: Entries">
+						<tbody>
+							<!-- ko foreach: Entries -->
 							<tr>
 								<td><span data-bind="text: Name"></span> <span class="badge" data-bind="text: PomodoroManagerState.getStateName(State)"></span></td>
 								<td data-bind="text: FormattedStart"></td>
@@ -153,6 +169,18 @@
 									</button>
 								</td>
 							</tr>
+							<!-- /ko -->
+							<tr>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td style="text-align: right;">
+									<button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#summaryModal">
+										<span class="glyphicon glyphicon-trash"></span> <span class="pomodoro-summary-label">Summary</span>
+									</button>
+								</td>
+								
 						</tbody>
 						<!-- /ko -->
 						<!-- ko if: Entries().length == 0 -->
@@ -171,20 +199,22 @@
 			<div class="row" style="text-align: right; color: gray; padding-left: 10px; padding-right: 10px;"><a href="https://www.freesound.org/people/bone666138/sounds/198841/">Alarm sound</a> by bone666138, available on Freesound.org</div>
 			<div class="row" style="text-align: right; color: gray; padding-left: 10px; padding-right: 10px;">Contact me at yuri dot oliveira at gmail dot com</div>
 		</div>
-
 	
-	<script>
-		PM = new PomodoroManager();
-		ko.applyBindings(PM);
-		
-		requestNotificationPermission();
-		
-		window.onbeforeunload = function (e) {
-			e = e || window.event;
+		<script>
+			PM = new PomodoroManager();
+			ko.applyBindings(PM);
 			
-			if (PM.State() == PomodoroManagerState.IDLE) { return null; }
-			if (e) { e.returnValue = "There's a Pomodoro running right now." }
-			return "There's a Pomodoro running right now.";
-		};
-	</script>
-</body></html>
+			requestNotificationPermission();
+			
+			window.onbeforeunload = function (e) {
+				e = e || window.event;
+				
+				if (PM.State() == PomodoroManagerState.IDLE) { return null; }
+				if (e) { e.returnValue = "There's a Pomodoro running right now." }
+				return "There's a Pomodoro running right now.";
+			};
+			
+			$('#summaryModal').on('hidden.bs.modal', PM.updateSummary);
+		</script>
+	</body>
+</html>
