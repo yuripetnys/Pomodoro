@@ -69,9 +69,8 @@ PomodoroEntry = function() {
 	this.FormattedEnd = ko.computed(function() { return !!this.End() ? this.End().format("MMM DD | HH:mm") : ""; }, this);
 	this.Difference = ko.computed(function() { 
 		if (!!this.Start() && !!this.End()) {
-			var min = this.End().diff(this.Start(), 'minutes');
-			var sec = this.End().diff(this.Start(), 'seconds') % 60;
-			return min + "m " + sec + "s";
+			var diff = this.End().diff(this.Start(), "seconds");
+			return PomodoroManager.formatTimeDifference(diff);
 		} else return "";
 	}, this);
 }
@@ -95,10 +94,23 @@ PomodoroEntry.Deserialize = function(jsonObject, manager) {
 }
 
 PomodoroSummaryEntry = function() {
-	this.TaskName = ko.observable(null);
-	this.WorkTime = ko.observable(null);
-	this.BreakTime = ko.observable(null);
-	this.PauseTime = ko.observable(null);
+	this.Name = "";
+	this.WorkTime = ko.observable(0);
+	this.BreakTime = ko.observable(0);
+	this.PauseTime = ko.observable(0);
+	
+	this.FormattedWorkTime = ko.computed(function() { return PomodoroManager.formatTimeDifference(this.WorkTime()); }, this);
+	this.FormattedBreakTime = ko.computed(function() { return PomodoroManager.formatTimeDifference(this.BreakTime()); }, this);
+	this.FormattedPauseTime = ko.computed(function() { return PomodoroManager.formatTimeDifference(this.PauseTime()); }, this);
+}
+PomodoroSummaryEntry.prototype.addTime = function(seconds, state) {
+	if (state == PomodoroManagerState.WORKING) {
+		this.WorkTime(this.WorkTime() + seconds);
+	} else if (state == PomodoroManagerState.SHORTBREAK || state == PomodoroManagerState.LONGBREAK) {
+		this.BreakTime(this.BreakTime() + seconds);
+	} else if (state == PomodoroManagerState.POTTYPAUSE) {
+		this.PauseTime(this.PauseTime() + seconds);
+	}
 }
 
 PomodoroManagerState = {}
@@ -149,6 +161,23 @@ function PomodoroManager() {
 	this.configureLocalStorage();
 }
 
+PomodoroManager.formatTimeDifference = function(seconds) {
+	var hour = Math.floor(seconds / 3600);
+	var min = Math.floor(seconds / 60) % 60;
+	var sec = seconds % 60;
+	
+	return (hour > 0 ? hour + "h " : "") + (min > 0 ? PomodoroManager.addLeadingZeros(min,2) + "m " : "") + (sec > 0 ? PomodoroManager.addLeadingZeros(sec,2) + "s" : "")
+	return hour + "m " + sec + "s";
+}
+
+PomodoroManager.addLeadingZeros = function(number, desiredDigitCount) {
+	var strNum = number.toString();
+	var numOfZeros = desiredDigitCount - strNum.length;
+	if (numOfZeros > 0) {
+		return new Array(numOfZeros + 1).join("0") + strNum;
+	}
+	return strNum;
+}
 
 PomodoroManager.prototype.startTimer = function() {
 	var promptResult = this.promptForNewTask();
@@ -320,13 +349,33 @@ PomodoroManager.prototype.configureLocalStorage = function () {
 PomodoroManager.prototype.clearEntry = function (entry) {
 	this.Parent.Entries.remove(entry);
 }
-PomodoroManager.prototype.updateSummary = function () {
-	
-}
 PomodoroManager.prototype.updateVersion = function () {
 	if (typeof(localStorage.Version)=="undefined") {
 		console.log("Updating to version 1.0...");
 		localStorage.Version = "1.0";
 		localStorage.removeItem("Entries");
 	}
+}
+
+PomodoroManager.prototype.updateSummary = function () {
+	var newSummary = [];
+	var entriesCache = this.Entries();
+	for (var i in entriesCache) {
+		var name = entriesCache[i].Name;
+		var seconds = entriesCache[i].End().diff(entriesCache[i].Start(), 'seconds');
+		var state = entriesCache[i].State;
+		
+		var existingSummaryRecords = newSummary.filter(function(e) { return e.Name == name; });
+		
+		if (existingSummaryRecords.length == 0) {
+			var newSummaryEntry = new PomodoroSummaryEntry();
+			newSummaryEntry.Name = name;
+			newSummaryEntry.addTime(seconds, state);
+			newSummary.push(newSummaryEntry);
+		}
+		else if (existingSummaryRecords.length == 1) {
+			existingSummaryRecords[0].addTime(seconds, state);
+		}
+	}
+	this.SummaryEntries(newSummary);
 }

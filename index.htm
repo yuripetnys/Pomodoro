@@ -80,7 +80,6 @@
 			</div>
 		</div>
 		
-		
 		<div class="modal fade" id="summaryModal">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -89,7 +88,33 @@
 						<h4 class="modal-title">Task Summary</h4>
 					</div>
 					<div class="modal-body">
-						<h4>Pomodoro Settings</h4>
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>Task</th>
+									<th>Work Time</th>
+									<th>Break Time</th>
+									<th>Pause Time</th>
+								</tr>
+							</thead>
+							<!-- ko if: Entries().length > 0 -->
+							<tbody data-bind="foreach: SummaryEntries">
+								<tr>
+									<td data-bind="text: Name" style="width: 100%"></td>
+									<td data-bind="text: FormattedWorkTime"></td>
+									<td data-bind="text: FormattedBreakTime"></td>
+									<td data-bind="text: FormattedPauseTime"></td>
+								</tr>
+							</tbody>
+							<!-- /ko -->
+							<!-- ko if: Entries().length == 0 -->
+							<tbody>
+								<tr>
+									<td colspan="4">No data to summarize</td>
+								</tr>
+							</tbody>
+							<!-- /ko -->
+						</table>
 					</div>
 				</div>
 			</div>
@@ -132,7 +157,7 @@
 						<button type="button" class="btn btn-danger btn-lg pomodoro-control-button-group-button" data-bind="click: stopTimer">
 							<span class="glyphicon glyphicon-stop"></span> Stop
 						</button>
-						<button type="button" class="btn btn-info btn-lg pomodoro-control-button-group-button" data-bind="click: pottyPause">
+						<button type="button" class="btn btn-primary btn-lg pomodoro-control-button-group-button" data-bind="click: pottyPause">
 							<span class="glyphicon glyphicon-tree-conifer"></span> Pause
 						</button>
 					</div>
@@ -176,8 +201,8 @@
 								<td></td>
 								<td></td>
 								<td style="text-align: right;">
-									<button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#summaryModal">
-										<span class="glyphicon glyphicon-trash"></span> <span class="pomodoro-summary-label">Summary</span>
+									<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#summaryModal">
+										<span class="glyphicon glyphicon-th-list"></span> <span class="pomodoro-summary-label">Summary</span>
 									</button>
 								</td>
 								
@@ -214,7 +239,7 @@
 				return "There's a Pomodoro running right now.";
 			};
 			
-			$('#summaryModal').on('hidden.bs.modal', PM.updateSummary);
+			$('#summaryModal').on('show.bs.modal', function() { PM.updateSummary(); });
 		</script>
 	</body>
 </html>
