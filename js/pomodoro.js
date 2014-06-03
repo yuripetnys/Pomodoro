@@ -6,37 +6,23 @@ DeviceDetector.IsIOS2 = function () {
 	return /(iPad|iPhone|iPod)/g.test( navigator.platform );
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 AudioManager = {}
 AudioManager.Alarm = new Audio();
-AudioManager.Alarm.addEventListener('ended', function () { 
-	if (AudioManager.SilenceEnabled) AudioManager.Silence.play(); 
-}, false);
-AudioManager.Silence = new Audio();
-AudioManager.Silence.loop = true;
-AudioManager.SilenceEnabled = false;
 AudioManager.load = function () { 
 	AudioManager.Alarm.src = "aud/alarm.mp3"; 
 	AudioManager.Alarm.load();
-	AudioManager.Silence.src = "aud/silence.mp3";
-	AudioManager.Silence.load();
 }
 AudioManager.play = function () { 
-	if (AudioManager.SilenceEnabled) AudioManager.Silence.pause();
 	AudioManager.Alarm.play();
 }
-AudioManager.enableSilenceLoop = function (enables) { 
-	if (enables) {
-		AudioManager.SilenceEnabled = true;
-		AudioManager.Silence.play(); 
-	} else {
-		AudioManager.SilenceEnabled = false;
-		AudioManager.Silence.pause();
-	}
-}
-
 if (!DeviceDetector.IsIOS()) AudioManager.load();
 
-function requestNotificationPermission() {
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+NotificationManager = {}
+NotificationManager.requestNotificationPermission = function() {
 	if ("Notification" in window) {
 		Notification.requestPermission(function (permission) { 
 			Notification.permission = permission; 
@@ -45,11 +31,11 @@ function requestNotificationPermission() {
 	}
 }
 
-function notifyUser(message) {
+NotificationManager.notifyUser = function(message) {
 	if ("Notification" in window) {
 		if (!("permission" in Notification) || (Notification.permission === "default")) 
 		{
-			requestNotificationPermission();
+			NotificationManager.requestNotificationPermission();
 		}
 		
 		if (Notification.permission !== "denied")
@@ -58,6 +44,8 @@ function notifyUser(message) {
 		}
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 PomodoroEntry = function() { 
 	this.Name = "";
@@ -139,24 +127,19 @@ function PomodoroManager() {
 	this.IntervalID = null;
 	this.State = ko.observable(PomodoroManagerState.IDLE);
 	this.Entries = ko.observableArray();
+	this.SummaryEntries = ko.observableArray();
 	this.CurrentTaskName = ko.observable("New Task");
 	this.Timer = ko.observable(0);
-	this.FormattedTimer = null;
+	this.StateBeforePause = null;
+	this.FormattedTimer = ko.computed(function() { return this.getFormattedTimer(); }, this);
+	
 	this.WorkTime = ko.observable(25);
 	this.ShortBreakTime = ko.observable(5);
 	this.MaxShortBreaks = ko.observable(3);
 	this.LongBreakTime = ko.observable(15);
-	this.StateBeforePause = null;
 	this.EnableAudioNotifications = ko.observable(true);
 	this.EnablePopupNotifications = ko.observable(true);
 	this.EnableVibration = ko.observable(true);
-	this.FormattedTimer = ko.computed(function() { return this.getFormattedTimer(); }, this);
-	
-	this.SummaryEntries = ko.observableArray();
-	
-	this.KeepMobileAlive = ko.observable();
-	this.KeepMobileAlive.subscribe(function(newValue) { AudioManager.enableSilenceLoop(newValue); });
-	this.KeepMobileAlive(true);
 	
 	this.configureLocalStorage();
 }
@@ -166,16 +149,14 @@ PomodoroManager.formatTimeDifference = function(seconds) {
 	var min = Math.floor(seconds / 60) % 60;
 	var sec = seconds % 60;
 	
-	return (hour > 0 ? hour + "h " : "") + (min > 0 ? PomodoroManager.addLeadingZeros(min,2) + "m " : "") + (sec > 0 ? PomodoroManager.addLeadingZeros(sec,2) + "s" : "")
+	return (hour > 0 ? hour + "h " : "") + (min > 0 ? PomodoroManager.addLeadingZeros(min,2) + "m " : "") + PomodoroManager.addLeadingZeros(sec,2) + "s";
 	return hour + "m " + sec + "s";
 }
 
 PomodoroManager.addLeadingZeros = function(number, desiredDigitCount) {
 	var strNum = number.toString();
 	var numOfZeros = desiredDigitCount - strNum.length;
-	if (numOfZeros > 0) {
-		return new Array(numOfZeros + 1).join("0") + strNum;
-	}
+	if (numOfZeros > 0)  return new Array(numOfZeros + 1).join("0") + strNum;
 	return strNum;
 }
 
@@ -187,7 +168,7 @@ PomodoroManager.prototype.startTimer = function() {
 		this.State(PomodoroManagerState.WORKING);
 		this.resetTimer();
 		this.startEntry();
-		if (this.EnablePopupNotifications()) requestNotificationPermission();
+		if (this.EnablePopupNotifications()) NotificationManager.requestNotificationPermission();
 		
 		this.IntervalID = setInterval(this.loop(this), 1000);
 	}
@@ -237,7 +218,7 @@ PomodoroManager.prototype.loop = function(manager) {
 			manager.endEntry();
 			manager.goToNextState();
 			var newState = manager.State();
-			if (manager.EnablePopupNotifications()) notifyUser("Your " + PomodoroManagerState.getStateName(oldState) + " Pomodoro is over. Starting a " + PomodoroManagerState.getStateName(newState) + " Pomodoro now!");
+			if (manager.EnablePopupNotifications()) NotificationManager.notifyUser("Your " + PomodoroManagerState.getStateName(oldState) + " Pomodoro is over. Starting a " + PomodoroManagerState.getStateName(newState) + " Pomodoro now!");
 			manager.startEntry();
 		}
 	}
@@ -328,7 +309,6 @@ PomodoroManager.prototype.configureLocalStorage = function () {
 		if ("EnableAudioNotifications" in localStorage) this.EnableAudioNotifications = !!localStorage.EnableAudioNotifications;
 		if ("EnablePopupNotifications" in localStorage) this.EnablePopupNotifications = !!localStorage.EnablePopupNotifications;
 		if ("EnableVibration" in localStorage) this.EnableVibration = !!localStorage.EnableVibration;
-		if ("KeepMobileAlive" in localStorage) this.KeepMobileAlive = !!localStorage.KeepMobileAlive;
 		
 		this.CurrentTaskName.subscribe(function(newValue) { localStorage.CurrentTaskName = newValue; });
 		this.WorkTime.subscribe(function(newValue) { localStorage.WorkTime = newValue; });
@@ -343,7 +323,6 @@ PomodoroManager.prototype.configureLocalStorage = function () {
 		this.EnableAudioNotifications.subscribe(function(newValue) { localStorage.EnableAudioNotifications = newValue; });
 		this.EnablePopupNotifications.subscribe(function(newValue) { localStorage.EnablePopupNotifications = newValue; });
 		this.EnableVibration.subscribe(function(newValue) { localStorage.EnableVibration = newValue; });
-		this.KeepMobileAlive.subscribe(function(newValue) { localStorage.KeepMobileAlive = newValue; });
 	}
 }
 PomodoroManager.prototype.clearEntry = function (entry) {
