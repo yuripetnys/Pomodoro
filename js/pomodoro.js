@@ -5,6 +5,9 @@ DeviceDetector.IsIOS = function () {
 DeviceDetector.IsIOS2 = function () {
 	return /(iPad|iPhone|iPod)/g.test( navigator.platform );
 }
+DeviceDetector.IsFirefoxOS = function () {
+	return "mozApps" in navigator;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -22,6 +25,7 @@ if (!DeviceDetector.IsIOS()) AudioManager.load();
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 NotificationManager = {}
+NotificationManager.LastNotification = null;
 NotificationManager.requestNotificationPermission = function() {
 	if ("Notification" in window) {
 		Notification.requestPermission(function (permission) { 
@@ -31,7 +35,7 @@ NotificationManager.requestNotificationPermission = function() {
 	}
 }
 
-NotificationManager.notifyUser = function(message) {
+NotificationManager.notifyUser = function(message, closeLastNotification) {
 	if ("Notification" in window) {
 		if (!("permission" in Notification) || (Notification.permission === "default")) 
 		{
@@ -40,12 +44,35 @@ NotificationManager.notifyUser = function(message) {
 		
 		if (Notification.permission !== "denied")
 		{
-			var notification = new Notification('Pomodoro do Arara', { body: message, icon: window.location + "images/icon-128.png" });
+			if (closeLastNotification && !!(NotificationManager.LastNotification)) NotificationManager.LastNotification.close();
+			NotificationManager.LastNotification = new Notification('Pomodoro do Arara', { body: message, icon: window.location + "images/icon-128.png" });
 		}
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+InstallManager = {}
+InstallManager.ManifestURL = location.href + 'manifest.webapp';
+InstallManager.Install = function() {
+	var installLocFind = navigator.mozApps.install(InstallManager.ManifestURL);
+	installLocFind.onsuccess = function(data) {	};
+	installLocFind.onerror = function() { alert(installLocFind.error.name);	};
+}
+InstallManager.init = function() {
+	var installButton = $('#installOnFirefoxOSButton');
+	if (DeviceDetector.IsFirefoxOS()) {
+		installButton.click(InstallManager.Install);
+		var installCheck = navigator.mozApps.checkInstalled(InstallManager.ManifestURL);
+		installCheck.onsuccess = function() {
+			if (installCheck.result) {
+				installButton.css({"display": "none"});
+			}
+		};
+	} else {
+		installButton.css({"display": "none"});
+	}
+};
 
 PomodoroEntry = function() { 
 	this.Name = "";
@@ -140,8 +167,25 @@ function PomodoroManager() {
 	this.EnableAudioNotifications = ko.observable(true);
 	this.EnablePopupNotifications = ko.observable(true);
 	this.EnableVibration = ko.observable(true);
+	this.RemoveOldNotifications = ko.observable(false);
 	
 	this.configureLocalStorage();
+}
+
+PomodoroManager.prototype.init = function() {
+	ko.applyBindings(this);
+	
+	window.onbeforeunload = function (e) {
+		e = e || window.event;
+		
+		if (PM.State() == PomodoroManagerState.IDLE) { return null; }
+		if (e) { e.returnValue = "There's a Pomodoro running right now." }
+		return "There's a Pomodoro running right now.";
+	};
+	
+	$('#summaryModal').on('show.bs.modal', function() { PM.updateSummary(); });
+	
+	InstallManager.init();
 }
 
 PomodoroManager.formatTimeDifference = function(seconds) {
@@ -218,7 +262,10 @@ PomodoroManager.prototype.loop = function(manager) {
 			manager.endEntry();
 			manager.goToNextState();
 			var newState = manager.State();
-			if (manager.EnablePopupNotifications()) NotificationManager.notifyUser("Your " + PomodoroManagerState.getStateName(oldState) + " Pomodoro is over. Starting a " + PomodoroManagerState.getStateName(newState) + " Pomodoro now!");
+			if (manager.EnablePopupNotifications()) {
+				var notificationMsg = "Your " + PomodoroManagerState.getStateName(oldState) + " Pomodoro is over. Starting a " + PomodoroManagerState.getStateName(newState) + " Pomodoro now!";
+				NotificationManager.notifyUser(notificationMsg, manager.RemoveOldNotifications());
+			}
 			manager.startEntry();
 		}
 	}
@@ -306,9 +353,10 @@ PomodoroManager.prototype.configureLocalStorage = function () {
 			var deserializedEntries = parsedEntries.map(function (element) { return PomodoroEntry.Deserialize(element, this); }, this);
 			this.Entries(deserializedEntries);
 		}
-		if ("EnableAudioNotifications" in localStorage) this.EnableAudioNotifications = !!localStorage.EnableAudioNotifications;
-		if ("EnablePopupNotifications" in localStorage) this.EnablePopupNotifications = !!localStorage.EnablePopupNotifications;
-		if ("EnableVibration" in localStorage) this.EnableVibration = !!localStorage.EnableVibration;
+		if ("EnableAudioNotifications" in localStorage) this.EnableAudioNotifications(!!localStorage.EnableAudioNotifications);
+		if ("EnablePopupNotifications" in localStorage) this.EnablePopupNotifications(!!localStorage.EnablePopupNotifications);
+		if ("EnableVibration" in localStorage) this.EnableVibration(!!localStorage.EnableVibration);
+		if ("RemoveOldNotifications" in localStorage) this.RemoveOldNotifications(!!localStorage.RemoveOldNotifications);
 		
 		this.CurrentTaskName.subscribe(function(newValue) { localStorage.CurrentTaskName = newValue; });
 		this.WorkTime.subscribe(function(newValue) { localStorage.WorkTime = newValue; });
@@ -323,6 +371,7 @@ PomodoroManager.prototype.configureLocalStorage = function () {
 		this.EnableAudioNotifications.subscribe(function(newValue) { localStorage.EnableAudioNotifications = newValue; });
 		this.EnablePopupNotifications.subscribe(function(newValue) { localStorage.EnablePopupNotifications = newValue; });
 		this.EnableVibration.subscribe(function(newValue) { localStorage.EnableVibration = newValue; });
+		this.RemoveOldNotifications.subscribe(function(newValue) { localStorage.RemoveOldNotifications = newValue; });
 	}
 }
 PomodoroManager.prototype.clearEntry = function (entry) {

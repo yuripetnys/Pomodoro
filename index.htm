@@ -67,6 +67,11 @@
 								<input type="checkbox" data-bind="checked: EnablePopupNotifications"> Enable popup notifications
 							</label>
 						</div>
+						<div class="checkbox" data-bind="style: {display: EnablePopupNotifications() ? 'block' : 'none'}">
+							<label>
+								<input type="checkbox" data-bind="checked: RemoveOldNotifications"> When showing new notifications, remove the old ones
+							</label>
+						</div>
 						<div class="checkbox">
 							<label>
 								<input type="checkbox" data-bind="checked: EnableVibration"> Vibrate cellphone on notifications
@@ -100,10 +105,10 @@
 							<!-- ko if: Entries().length > 0 -->
 							<tbody data-bind="foreach: SummaryEntries">
 								<tr>
-									<td data-bind="text: Name" style="width: 100%"></td>
-									<td data-bind="text: FormattedWorkTime"></td>
-									<td data-bind="text: FormattedBreakTime"></td>
-									<td data-bind="text: FormattedPauseTime"></td>
+									<td data-bind="text: Name"></td>
+									<td style="width: 100px" data-bind="text: FormattedWorkTime"></td>
+									<td style="width: 100px" data-bind="text: FormattedBreakTime"></td>
+									<td style="width: 100px" data-bind="text: FormattedPauseTime"></td>
 								</tr>
 							</tbody>
 							<!-- /ko -->
@@ -129,6 +134,7 @@
 
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav navbar-right">
+						<li id="installOnFirefoxOSButton"><a href="#">Install this app!</a></li>
 						<li><a href="#" data-toggle="modal" data-target="#configModal">Settings</a></li>
 						<li><a href="http://polei.ro/pomodoro/about.htm">About</a></li>
 						<li><a href="javascript:;" onclick="document.getElementById('paypalForm').submit();">Donate via PayPal!</a></li>
@@ -227,17 +233,7 @@
 	
 		<script>
 			PM = new PomodoroManager();
-			ko.applyBindings(PM);
-			
-			window.onbeforeunload = function (e) {
-				e = e || window.event;
-				
-				if (PM.State() == PomodoroManagerState.IDLE) { return null; }
-				if (e) { e.returnValue = "There's a Pomodoro running right now." }
-				return "There's a Pomodoro running right now.";
-			};
-			
-			$('#summaryModal').on('show.bs.modal', function() { PM.updateSummary(); });
+			PM.init();
 		</script>
 	</body>
 </html>
