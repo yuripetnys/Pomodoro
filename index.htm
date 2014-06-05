@@ -153,9 +153,11 @@
 					<span data-bind="text: FormattedTimer">00:00</span>
 				</div>
 				<div class="col-xs-12 col-sm-4 col-md-4 pomodoro-control-button-div">
-					<button type="button" class="btn btn-success btn-lg pomodoro-control-button" data-bind="click: startTimer, style: { display: State() == 0 ? 'inline-block' : 'none' }">
-						<span class="glyphicon glyphicon-play"></span> Start
-					</button>
+					<div class="btn-group pomodoro-control-button-group" data-bind="style: { display: State() == 0 ? 'inline-block' : 'none' }">
+						<button type="button" class="btn btn-success btn-lg pomodoro-control-button" data-bind="click: startTimer">
+							<span class="glyphicon glyphicon-play"></span> Start
+						</button>
+					</div>						
 					<div class="btn-group pomodoro-control-button-group" data-bind="style: { display: State() == 0 ? 'none' : 'inline-block' }" style="display: none;">
 						<button type="button" class="btn btn-primary btn-lg pomodoro-control-button-group-button" data-bind="click: changeTask">
 							<span class="glyphicon glyphicon-edit"></span> Task
@@ -176,12 +178,12 @@
 						<thead>
 							<tr>
 								<th>Task</th>
-								<th>Start</th>
-								<th>End</th>
-								<th>Duration</th>
-								<th style="text-align: right; width: 0px">
+								<th class="main-table-time-column">Start</th>
+								<th class="main-table-time-column">End</th>
+								<th class="main-table-duration-column"><span class="large-screen-only">Duration</span><span class="small-screen-only">Dur.</span></th>
+								<th class="main-table-button-column">
 									<button type="button" class="btn btn-danger btn-sm" data-bind="click: clearAllEntries">
-										<span class="glyphicon glyphicon-trash"></span> <span class="pomodoro-delete-all-label">Clear all</span>
+										<span class="glyphicon glyphicon-trash"></span> <span class="large-screen-only">Clear all</span>
 									</button>
 								</th>
 							</tr>
@@ -191,12 +193,12 @@
 							<!-- ko foreach: Entries -->
 							<tr>
 								<td><span data-bind="text: Name"></span> <span class="badge" data-bind="text: PomodoroManagerState.getStateName(State)"></span></td>
-								<td data-bind="text: FormattedStart"></td>
-								<td data-bind="text: FormattedEnd"></td>
-								<td data-bind="text: Difference"></td>
-								<td style="text-align: right;">
+								<td class="main-table-time-column" data-bind="text: FormattedStart"></td>
+								<td class="main-table-time-column" data-bind="text: FormattedEnd"></td>
+								<td class="main-table-duration-column" data-bind="text: Difference"></td>
+								<td class="main-table-button-column">
 									<button type="button" class="btn btn-danger btn-sm" data-bind="click: $parent.clearEntry">
-										<span class="glyphicon glyphicon-trash"></span> <span class="pomodoro-delete-label">Delete</span>
+										<span class="glyphicon glyphicon-trash"></span> <span class="large-screen-only">Delete</span>
 									</button>
 								</td>
 							</tr>
@@ -208,7 +210,7 @@
 								<td></td>
 								<td style="text-align: right;">
 									<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#summaryModal">
-										<span class="glyphicon glyphicon-th-list"></span> <span class="pomodoro-summary-label">Summary</span>
+										<span class="glyphicon glyphicon-th-list"></span> <span class="large-screen-only">Summary</span>
 									</button>
 								</td>
 								

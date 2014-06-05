@@ -22,6 +22,10 @@
 	width: 100%;
 }
 
+.main-table-button-column {
+	text-align: right;
+}
+	
 @media (max-width: 768px) {
 	.container {
 		font-size: 11px;
@@ -54,17 +58,29 @@
 		width: 60px;
 	}
 	
-	.pomodoro-delete-label {
+	.large-screen-only {
 		display: none;
 	}
 	
-	.pomodoro-delete-all-label {
-		display: none;
+	.pomodoro-control-button-group {
+		width: 100%;
 	}
 	
 	.pomodoro-control-button-group-button {
 		width: 33%;
 		font-size: 14px;
+	}
+	
+	.main-table-time-column {
+		width: 50px;
+	}
+
+	.main-table-duration-column {
+		width: 40px;
+	}
+	
+	.main-table-button-column {
+		width: 50px;
 	}
 }
 
@@ -88,5 +104,13 @@
 	
 	.pomodoro-input-suffix {
 		width: 70px;
+	}
+	
+	.small-screen-only {
+		display: none;
+	}
+	
+	.main-table-time-column, .main-table-duration-column , .main-table-button-column {
+		width: 110px;
 	}
 }
