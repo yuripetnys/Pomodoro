@@ -44,9 +44,15 @@ if (!DeviceDetector.IsIOS()) AudioManager.load();
 
 NotificationManager = {}
 NotificationManager.LastNotification = null;
+NotificationManager.IconURL = window.location + "images/icon-128.png";
 NotificationManager.requestNotificationPermission = function() {
 	if ("Notification" in window) {
 		Notification.requestPermission(function (permission) { 
+			Notification.permission = permission; 
+			console.log(permission);
+		});
+	} else if ("mozNotification" in window) {
+		mozNotification.requestPermission(function (permission) { 
 			Notification.permission = permission; 
 			console.log(permission);
 		});
@@ -63,8 +69,10 @@ NotificationManager.notifyUser = function(message, closeLastNotification) {
 		if (Notification.permission !== "denied")
 		{
 			if (closeLastNotification && !!(NotificationManager.LastNotification)) NotificationManager.LastNotification.close();
-			NotificationManager.LastNotification = new Notification('Pomodoro do Arara', { body: message, icon: window.location + "images/icon-128.png" });
+			NotificationManager.LastNotification = new Notification('Pomodoro do Arara', { body: message, icon: NotificationManager.IconURL });
 		}
+	} else if ("mozNotification" in window) {
+		mozNotification.createNotification('Pomodoro do Arara', message, NotificationManager.IconURL).show();
 	}
 }
 
@@ -234,6 +242,8 @@ function PomodoroManager() {
 
 PomodoroManager.prototype.init = function() {
 	ConfigManager.init(this);
+	
+	if (this.EnablePopupNotifications()) NotificationManager.requestNotificationPermission();
 	
 	window.onbeforeunload = function (e) {
 		e = e || window.event;
