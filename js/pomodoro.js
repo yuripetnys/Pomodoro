@@ -31,6 +31,7 @@ DeviceDetector.IsFirefoxOS = function () {
 
 AudioManager = {}
 AudioManager.Alarm = new Audio();
+AudioManager.Alarm.mozaudiochannel = "notification";
 AudioManager.load = function () { 
     AudioManager.Alarm.src = "aud/alarm.mp3"; 
     AudioManager.Alarm.load();
