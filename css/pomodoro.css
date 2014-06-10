@@ -66,8 +66,13 @@
 		width: 100%;
 	}
 	
-	.pomodoro-control-button-group-button {
-		width: 33%;
+	.pomodoro-control-button-100 {
+		width: 100%;
+		font-size: 14px;
+	}
+	
+	.pomodoro-control-button-33 {
+		width: 33.3%;
 		font-size: 14px;
 	}
 	
