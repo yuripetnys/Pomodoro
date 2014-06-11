@@ -1,14 +1,11 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 DeviceDetector = {}
+DeviceDetector.FirefoxOSRegex = /Mozilla\/\d*\.\d* \((Mobile|Tablet); rv:\d*\.\d*\) Gecko\/\d*\.\d* Firefox\/\d*\.\d*/
+DeviceDetector.IOSRegex = /(iPad|iPhone|iPod)/
 DeviceDetector.IsIOS = function () {
-    return /(iPad|iPhone|iPod)/g.test( navigator.userAgent );
-}
-DeviceDetector.IsIOS2 = function () {
-    return /(iPad|iPhone|iPod)/g.test( navigator.platform );
+    return DeviceDetector.IOSRegex.test( navigator.userAgent );
 }
 DeviceDetector.IsFirefoxOS = function () {
-    return "mozApps" in navigator && /(Mobile|Tablet)/g.test(navigator.userAgent);
+    return DeviceDetector.FirefoxOSRegex.test(navigator.userAgent);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
