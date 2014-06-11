@@ -1,19 +1,3 @@
-Util = {};
-Util.formatTimeDifference = function(seconds) {
-    var hour = Math.floor(seconds / 3600);
-    var min = Math.floor(seconds / 60) % 60;
-    var sec = seconds % 60;
-    
-    return (hour > 0 ? hour + "h " : "") + (min > 0 ? Util.addLeadingZeros(min,2) + "m " : "") + Util.addLeadingZeros(sec,2) + "s";
-    return hour + "m " + sec + "s";
-}
-Util.addLeadingZeros = function(number, desiredDigitCount) {
-    var strNum = number.toString();
-    var numOfZeros = desiredDigitCount - strNum.length;
-    if (numOfZeros > 0)  return new Array(numOfZeros + 1).join("0") + strNum;
-    return strNum;
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 DeviceDetector = {}
@@ -29,9 +13,40 @@ DeviceDetector.IsFirefoxOS = function () {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+Util = {};
+Util.formatTimeDifference = function(seconds) {
+    var hour = Math.floor(seconds / 3600);
+    var min = Math.floor(seconds / 60) % 60;
+    var sec = seconds % 60;
+    
+    return (hour > 0 ? hour + "h " : "") + (min > 0 ? Util.addLeadingZeros(min,2) + "m " : "") + Util.addLeadingZeros(sec,2) + "s";
+    return hour + "m " + sec + "s";
+}
+Util.addLeadingZeros = function(number, desiredDigitCount) {
+    var strNum = number.toString();
+    var numOfZeros = desiredDigitCount - strNum.length;
+    if (numOfZeros > 0)  return new Array(numOfZeros + 1).join("0") + strNum;
+    return strNum;
+}
+Util.redirectToPaypal = function() {
+	if (DeviceDetector.IsFirefoxOS() && "MozActivity" in window) {
+		var a = new MozActivity({
+			name: "view",
+			data: {
+				type: "url",
+				url: "http://polei.ro/pomodoro/paypal.htm"
+			}
+		});
+	} else {
+		document.getElementById('paypalForm').submit();
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 AudioManager = {}
 AudioManager.Alarm = new Audio();
-AudioManager.Alarm.mozaudiochannel = "notification";
+AudioManager.Alarm.mozaudiochannel = "alarm";
 AudioManager.load = function () { 
     AudioManager.Alarm.src = "aud/alarm.mp3"; 
     AudioManager.Alarm.load();
@@ -284,8 +299,6 @@ PomodoroManager.prototype.loop = function(manager) {
         if (manager.Timer() == 0)
         {
             var oldState = manager.State();
-            if (manager.EnableAudioNotifications()) AudioManager.play();
-            if ("vibrate" in window.navigator && manager.EnableVibration()) window.navigator.vibrate([200,100,200,100,200]);
             manager.endEntry();
             manager.goToNextState();
             var newState = manager.State();
@@ -293,6 +306,9 @@ PomodoroManager.prototype.loop = function(manager) {
                 var notificationMsg = "Your " + PomodoroManagerState.getStateName(oldState) + " Pomodoro is over. Starting a " + PomodoroManagerState.getStateName(newState) + " Pomodoro now!";
                 NotificationManager.notifyUser(notificationMsg, manager.RemoveOldNotifications());
             }
+            if (manager.EnableAudioNotifications() && !(DeviceDetector.IsFirefoxOS() && manager.EnablePopupNotifications())) AudioManager.play();
+			//if (manager.EnableAudioNotifications()) AudioManager.play();
+            if ("vibrate" in window.navigator && manager.EnableVibration()) window.navigator.vibrate([200,100,200,100,200]);
             manager.startEntry();
         }
     }
