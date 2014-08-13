@@ -44,14 +44,20 @@ Util.redirectToPaypal = function() {
 AudioManager = {}
 AudioManager.Alarm = new Audio();
 AudioManager.Alarm.mozaudiochannel = "alarm";
+AudioManager.setAudioURL = function (url) {
+	AudioManager.Alarm.src = url;
+}
 AudioManager.load = function () { 
-    AudioManager.Alarm.src = "aud/vuvuzela.mp3"; 
     AudioManager.Alarm.load();
 }
 AudioManager.play = function () {
     AudioManager.Alarm.play();
 }
-if (!DeviceDetector.IsIOS()) AudioManager.load();
+
+function AlarmType(name, url) {
+	this.Name = name
+	this.URL = url
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -102,7 +108,8 @@ ConfigManager.init = function (manager) {
         if ("EnablePopupNotifications" in localStorage) manager.EnablePopupNotifications(!!localStorage.EnablePopupNotifications);
         if ("EnableVibration" in localStorage) manager.EnableVibration(!!localStorage.EnableVibration);
         if ("RemoveOldNotifications" in localStorage) manager.RemoveOldNotifications(!!localStorage.RemoveOldNotifications);
-        
+        if ("AudioURL" in localStorage) manager.AudioURL(localStorage.AudioURL);
+		
         manager.CurrentTaskName.subscribe(function(newValue) { localStorage.CurrentTaskName = newValue; });
         manager.WorkTime.subscribe(function(newValue) { localStorage.WorkTime = newValue; });
         manager.ShortBreakTime.subscribe(function(newValue) { localStorage.ShortBreakTime = newValue; });
@@ -113,6 +120,7 @@ ConfigManager.init = function (manager) {
         manager.EnablePopupNotifications.subscribe(function(newValue) { localStorage.EnablePopupNotifications = newValue; });
         manager.EnableVibration.subscribe(function(newValue) { localStorage.EnableVibration = newValue; });
         manager.RemoveOldNotifications.subscribe(function(newValue) { localStorage.RemoveOldNotifications = newValue; });
+		manager.AudioURL.subscribe(function(newValue) { localStorage.AudioURL = newValue; });
     }
 }
 ConfigManager.updateVersion = function () {
@@ -223,6 +231,9 @@ function PomodoroManager() {
     this.EnablePopupNotifications = ko.observable(true);
     this.EnableVibration = ko.observable(true);
     this.RemoveOldNotifications = ko.observable(false);
+	this.AudioURL = ko.observable("aud/vuvuzela.mp3");
+	this.AudioURL.subscribe(function(newValue) { AudioManager.setAudioURL(newValue); AudioManager.load(); });
+	this.AlarmList = [ new AlarmType("Alarm Clock", "aud/alarm.mp3"), new AlarmType("Vuvuzela", "aud/vuvuzela.mp3"), new AlarmType("Westminster", "aud/westminster.mp3") ];
 }
 
 PomodoroManager.prototype.init = function() {
