@@ -65,7 +65,7 @@
 									<li>Replaced the About page with a tabbed modal dialog.</li>
 									<li>Added new options for customizing notifications.</li>
 									<li>Added new summary button!</li>
-									<li>Pomodoro is now fully compatible with Firefox OS!<li>
+									<li>Pomodoro is now fully compatible with Firefox OS!</li>
 								</ul>
 								<h2>2014-05-23</h2>
 								<ul>
@@ -338,6 +338,7 @@
 		<script>
 			PM = new PomodoroManager();
 			PM.init();
+			$('#summaryModal').on('show.bs.modal', function() { PM.updateSummary(); });
 		</script>
 	</body>
 </html>

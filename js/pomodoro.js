@@ -45,7 +45,7 @@ AudioManager = {}
 AudioManager.Alarm = new Audio();
 AudioManager.Alarm.mozaudiochannel = "alarm";
 AudioManager.load = function () { 
-    AudioManager.Alarm.src = "aud/alarm.mp3"; 
+    AudioManager.Alarm.src = "aud/vuvuzela.mp3"; 
     AudioManager.Alarm.load();
 }
 AudioManager.play = function () {
@@ -60,7 +60,7 @@ NotificationManager.LastNotification = null;
 if (DeviceDetector.IsFirefoxOS()) {
 	NotificationManager.IconURL = "app://" + window.location.host + "/images/icon-128.png";
 } else {
-	NotificationManager.IconURL = "/images/icon-128.png";
+	NotificationManager.IconURL = "images/icon-128.png";
 }
 NotificationManager.requestNotificationPermission = function() {
     if ("Notification" in window) {
@@ -237,8 +237,6 @@ PomodoroManager.prototype.init = function() {
         if (e) { e.returnValue = "There's a Pomodoro running right now." }
         return "There's a Pomodoro running right now.";
     };
-    
-    $('#summaryModal').on('show.bs.modal', function() { PM.updateSummary(); });
     
     ko.applyBindings(this);
 }
