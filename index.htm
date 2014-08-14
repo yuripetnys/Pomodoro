@@ -59,6 +59,11 @@
 								</ul>
 							</div>
 							<div class="tab-pane" id="aboutModal-changelogTab">
+								<h2>2014-08-14</h2>
+								<ul>
+									<li>Added the option to choose your own alarm clock - provided it's hosted somewhere.</li>
+									<li>Support for local audio files is being studied.</li>
+								</ul>
 								<h2>2014-08-13</h2>
 								<ul>
 									<li>Added a new option in the Options menu that allows each user to customize the alarm sound.</li>
@@ -186,10 +191,17 @@
 								</div>
 								<div class="checkbox">
 									<label>
-										Alarm sound: <select data-bind="options: AlarmList, optionsText: 'Name', optionsValue: 'URL', value: AudioURL"></select>
+										Alarm sound: <div class="btn-group">
+											<button type="button" id="audiobtn1" class="btn btn-default" data-bind="click: function() { AudioURL('aud/alarm.mp3'); }">Alarm Clock</button>
+											<button type="button" id="audiobtn2" class="btn btn-default" data-bind="click: function() { AudioURL('aud/vuvuzela.mp3'); }">Vuvuzela</button>
+											<button type="button" id="audiobtn3" class="btn btn-default" data-bind="click: function() { AudioURL('aud/westminster.mp3'); }">Westminster</button>
+											<button type="button" id="audiobtn4" class="btn btn-default" data-bind="click: promptForAudioURL">Custom</button>
+										</div>
 									</label>
 								</div>
-
+								<div class="form-group">
+									<input type="email" class="form-control" data-bind="value: AudioURL" disabled>
+								</div>
 							</div>
 						</div>
 					</div>

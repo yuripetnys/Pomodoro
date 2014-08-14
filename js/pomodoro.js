@@ -233,7 +233,6 @@ function PomodoroManager() {
     this.RemoveOldNotifications = ko.observable(false);
 	this.AudioURL = ko.observable("aud/vuvuzela.mp3");
 	this.AudioURL.subscribe(function(newValue) { AudioManager.setAudioURL(newValue); AudioManager.load(); });
-	this.AlarmList = [ new AlarmType("Alarm Clock", "aud/alarm.mp3"), new AlarmType("Vuvuzela", "aud/vuvuzela.mp3"), new AlarmType("Westminster", "aud/westminster.mp3") ];
 }
 
 PomodoroManager.prototype.init = function() {
@@ -250,6 +249,12 @@ PomodoroManager.prototype.init = function() {
     };
     
     ko.applyBindings(this);
+}
+
+PomodoroManager.prototype.promptForAudioURL = function() {
+    var audiourl = window.prompt("Please input the URL for the audio you would like to use. It's recommended to use some very loud and identifiable sound of about 5 seconds of length.", this.AudioURL());
+    
+    if (audiourl != null && !!audiourl) this.AudioURL(audiourl);
 }
 
 PomodoroManager.prototype.startTimer = function() {
